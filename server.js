@@ -1,23 +1,17 @@
-'use strict';
+'use strict'
+const express = require('express')
+const cors = require('cors')
+const fileupload = require('express-fileupload')
+const fileAnalyser = require('./file-analyser')
 
-var express = require('express');
-var cors = require('cors');
+const app = express()
 
-// require and use "multer"...
+app.use('/public', express.static(process.cwd() + '/public'))
+app.get('/', (req, res) => res.sendFile(process.cwd() + '/views/index.html'))
 
-var app = express();
+app.get('/hello', (req, res) => res.json({ greetings: 'Hello, API' }))
 
-app.use(cors());
-app.use('/public', express.static(process.cwd() + '/public'));
+app.use('/api', [cors(), fileupload()])
+app.post('/api/fileanalyse', fileAnalyser)
 
-app.get('/', function (req, res) {
-     res.sendFile(process.cwd() + '/views/index.html');
-  });
-
-app.get('/hello', function(req, res){
-  res.json({greetings: "Hello, API"});
-});
-
-app.listen(process.env.PORT || 3000, function () {
-  console.log('Node.js listening ...');
-});
+app.listen(process.env.PORT || 3000, _ => console.log('Node.js listening ...'))
